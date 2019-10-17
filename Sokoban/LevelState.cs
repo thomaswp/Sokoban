@@ -177,6 +177,11 @@ namespace Sokoban
                         state[j, i] = Actor.Player.id;
                         continue;
                     }
+                    if (icon == '@')
+                    {
+                        state[j, i] = Actor.Box.id | Actor.Switch.id;
+                        continue;
+                    }
                     state[j, i] = Actor.ActorForIcon(icon).id;
                 }
             }

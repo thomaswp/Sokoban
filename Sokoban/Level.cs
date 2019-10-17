@@ -93,5 +93,27 @@ namespace Sokoban
 #..###
 ####..");
 
+        public static readonly LevelState Level2 = LevelState.FromString(@"
+######
+#....#
+#.#1.#
+#.*@.#
+#.O@.#
+#....#
+######");
+
+        public static readonly LevelState Level3 = LevelState.FromString(@"
+########
+###...##
+#O1*..##
+###.*O##
+#O##*.##
+#.#.O.##
+#*.@**O#
+#...O..#
+########
+");
+
+
     }
 }

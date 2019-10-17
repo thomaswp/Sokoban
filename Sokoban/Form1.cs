@@ -21,7 +21,7 @@ namespace Sokoban
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            level = new Level(Level.Level1);
+            level = new Level(Level.Level3);
             label1.Text = level.ToString();
             label2.Text = "0";
 
