@@ -65,6 +65,11 @@ namespace Sokoban
         public void Solve()
         {
             var path = Solver.FindPath(currentState);
+            if (path == null)
+            {
+                Console.WriteLine("No solution...");
+                return;
+            }
             Console.WriteLine("Solution!");
             int i = 0;
             foreach (LevelState state in path)
@@ -85,7 +90,7 @@ namespace Sokoban
 #..###
 #O1..#
 #*.*.#
-#2.###
+#..###
 ####..");
 
     }

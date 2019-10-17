@@ -32,6 +32,11 @@ namespace Sokoban
             actors.Add(this);
         }
 
+        public bool IsAt(int value)
+        {
+            return (value & id) == id;
+        }
+
         public static Actor ActorForId(int id)
         {
             int index = id == 0 ? 0 : (int)(Math.Log(id) / Math.Log(2)) + 1;

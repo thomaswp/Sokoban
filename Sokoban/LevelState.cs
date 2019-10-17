@@ -101,18 +101,30 @@ namespace Sokoban
         public int HeuristicCost()
         {
             List<Point> boxes = FindActors(Actor.Box);
+            List<Point> players = FindActors(Actor.Player);
             List<Point> switches = FindActors(Actor.Switch);
             
             int cost = 0;
-            foreach (Point swtch in switches)
+            foreach (Point box in boxes)
             {
-                if (boxes.Count == 0) return int.MaxValue;
-                List<int> dists = boxes.Select(box => Distance(box, swtch)).ToList();
-                int index = dists.IndexOf(dists.Min());
-                boxes.RemoveAt(index);
-                cost += dists[index];
+                int value = state[box.X, box.Y];
+                if (Actor.Switch.IsAt(value)) continue;
+                cost += FindClosestActor(box, players, false);
+            }
+            foreach (Point @switch in switches)
+            {
+                cost += FindClosestActor(@switch, boxes, true);
             }
             return cost;
+        }
+
+        private int FindClosestActor(Point from, List<Point> actors, bool remove)
+        {
+            if (actors.Count == 0) return int.MaxValue;
+            List<int> dists = actors.Select(box => Distance(box, from)).ToList();
+            int index = dists.IndexOf(dists.Min());
+            if (remove) actors.RemoveAt(index);
+            return dists[index];
         }
 
         static int Distance(Point a, Point b)
@@ -127,7 +139,7 @@ namespace Sokoban
             {
                 for (int j = 0; j < height; j++)
                 {
-                    if ((state[i, j] & actor.id) == actor.id) actors.Add(new Point(j, i));
+                    if (actor.IsAt(state[i, j])) actors.Add(new Point(i, j));
                 }
             }
             return actors;

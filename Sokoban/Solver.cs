@@ -51,6 +51,7 @@ namespace Sokoban
             Seen.Add(current.State);
 
             bool done = false;
+            int explored = 1;
 
             while (OpenList.Count != 0)
             {
@@ -58,13 +59,14 @@ namespace Sokoban
                 OpenList.Remove(current);
                 IEnumerable<LevelState> adjacencies = current.State.GetPossibleNextStates();
 
-                Console.WriteLine(current.Cost);
-                Console.WriteLine(current.DistanceToTarget);
-                Console.WriteLine(current.State);
-                Console.WriteLine("-------------");
+                //Console.WriteLine(current.Cost);
+                //Console.WriteLine(current.DistanceToTarget);
+                //Console.WriteLine(current.State);
+                //Console.WriteLine("-------------");
 
                 foreach (LevelState state in adjacencies)
                 {
+                    explored++;
                     if (!Seen.Contains(state))
                     {
                         Node n = new Node(current, state);
@@ -80,6 +82,8 @@ namespace Sokoban
                 if (done) break;
                 OpenList.Sort();
             }
+
+            Console.WriteLine("Explored {0} nodes ({1} unique)", explored, Seen.Count);
 
             // construct path, if end was not closed return null
             if (!done) return null;
