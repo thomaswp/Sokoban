@@ -72,22 +72,64 @@ namespace Sokoban
             return true;
         }
 
-        public LevelState Clone()
+        public IEnumerable<LevelState> GetPossibleNextStates()
         {
-            return new LevelState(state.Clone() as int[,], playerOrder.Clone() as Point[]);
+            LevelState copy = Clone();
+            int[] dxs = { 1, -1, 0, 0 };
+            int[] dys = { 0, 0, 1, -1 };
+            for (int i = 0; i < 4; i++)
+            {
+                if (copy.Move(dxs[i], dys[i]))
+                {
+                    yield return copy;
+                    copy = Clone();
+                }
+            }
         }
 
-        public int CountActor(Actor actor)
+        public int HeuristicCost()
         {
-            int count = 0;
+            List<Point> boxes = FindActors(Actor.Box);
+            List<Point> switches = FindActors(Actor.Switch);
+            
+            int cost = 0;
+            foreach (Point swtch in switches)
+            {
+                if (boxes.Count == 0) return int.MaxValue;
+                List<int> dists = boxes.Select(box => Distance(box, swtch)).ToList();
+                int index = dists.IndexOf(dists.Min());
+                boxes.RemoveAt(index);
+                cost += dists[index];
+            }
+            return cost;
+        }
+
+        static int Distance(Point a, Point b)
+        {
+            return Math.Abs(a.X - b.X) + Math.Abs(a.Y - b.Y);
+        }
+
+        public List<Point> FindActors(Actor actor)
+        {
+            List<Point> actors = new List<Point>();
             for (int i = 0; i < width; i++)
             {
                 for (int j = 0; j < height; j++)
                 {
-                    if ((state[i, j] & actor.id) == actor.id) count++;
+                    if ((state[i, j] & actor.id) == actor.id) actors.Add(new Point(j, i));
                 }
             }
-            return count;
+            return actors;
+        }
+
+        public int CountActor(Actor actor)
+        {
+            return FindActors(actor).Count;
+        }
+
+        public LevelState Clone()
+        {
+            return new LevelState(state.Clone() as int[,], playerOrder.Clone() as Point[]);
         }
 
         public static LevelState FromString(string level)
@@ -138,6 +180,38 @@ namespace Sokoban
                 s += "\n";
             }
             return s;
+        }
+
+        public override int GetHashCode()
+        {
+            int hash = 17;
+            for (int i = 0; i < width; i++)
+            {
+                for (int j = 0; j < height; j++)
+                {
+                    hash = hash * 31 + state[i, j];
+                }
+            }
+            foreach (Point p in playerOrder)
+            {
+                hash = hash * 31 + p.GetHashCode();
+            }
+            return hash;
+        }
+
+        public override bool Equals(object obj)
+        {
+            LevelState other = obj as LevelState;
+            if (other == null || other.width != width || other.height != height) return false;
+            if (!Enumerable.SequenceEqual(playerOrder, other.playerOrder)) return false;
+            for (int i = 0; i < width; i++)
+            {
+                for (int j = 0; j < height; j++)
+                {
+                    if (other.state[i, j] != state[i, j]) return false;
+                }
+            }
+            return true;
         }
     }
 }

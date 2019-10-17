@@ -23,6 +23,9 @@ namespace Sokoban
         {
             level = new Level(Level.Level1);
             label1.Text = level.ToString();
+            label2.Text = "0";
+
+            level.Solve();
         }
 
         private void Form1_KeyPress(object sender, KeyPressEventArgs e)
@@ -45,6 +48,8 @@ namespace Sokoban
             }
             
             label1.Text = level.ToString();
+            label2.Text = "" + level.Moves;
+            Console.WriteLine(level.CurrentState.HeuristicCost());
         }
     }
 }

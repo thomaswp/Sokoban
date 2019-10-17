@@ -14,6 +14,16 @@ namespace Sokoban
         private LevelState currentState;
         private List<LevelState> history = new List<LevelState>();
 
+        public LevelState CurrentState
+        {
+            get { return currentState.Clone(); }
+        }
+
+        public int Moves
+        {
+            get { return history.Count - 1; }
+        }
+
         public Level(LevelState initialState)
         {
             this.initialState = currentState = initialState;
@@ -43,6 +53,11 @@ namespace Sokoban
             return true;
         }
 
+        public void Solve()
+        {
+            Solver.FindPath(currentState);
+        }
+
         public override string ToString()
         {
             return currentState.ToString();
@@ -53,8 +68,9 @@ namespace Sokoban
 #.O#..
 #..###
 #O1..#
-#..*.#
-#2.###
+#*.*.#
+#..###
 ####..");
+
     }
 }
