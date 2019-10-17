@@ -36,10 +36,19 @@ namespace Sokoban
 
         public bool Move(int dx, int dy)
         {
-            bool success = currentState.Move(dx, dy);
+            return Act(() => currentState.Move(dx, dy));
+        }
+
+        public bool Pass()
+        {
+            return Act(() => currentState.Pass());
+        }
+
+        private bool Act(Func<bool> action)
+        {
+            bool success = action();
             if (success)
             {
-                currentState.Advance();
                 history.Add(currentState.Clone());
             }
             return success;
@@ -55,7 +64,14 @@ namespace Sokoban
 
         public void Solve()
         {
-            Solver.FindPath(currentState);
+            var path = Solver.FindPath(currentState);
+            Console.WriteLine("Solution!");
+            int i = 0;
+            foreach (LevelState state in path)
+            {
+                Console.WriteLine(i++);
+                Console.WriteLine(state);
+            }
         }
 
         public override string ToString()
@@ -69,7 +85,7 @@ namespace Sokoban
 #..###
 #O1..#
 #*.*.#
-#..###
+#2.###
 ####..");
 
     }

@@ -34,6 +34,10 @@ namespace Sokoban
             {
                 level.Undo();
             }
+            else if (e.KeyChar == 'p')
+            {
+                level.Pass();
+            }
             else
             {
                 int dx = 0, dy = 0;

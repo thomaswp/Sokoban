@@ -35,10 +35,19 @@ namespace Sokoban
         public bool Move(int dx, int dy)
         {
             Point player = playerOrder[0];
-            return Move(player.X, player.Y, dx, dy);
+            bool success = Move(player.X, player.Y, dx, dy);
+            if (success) Advance();
+            return success;
         }
 
-        internal void Advance()
+        public bool Pass()
+        {
+            if (playerOrder.Length <= 1) return false;
+            Advance();
+            return true;
+        }
+
+        private void Advance()
         {
             Point first = playerOrder[0];
             for (int i = 1; i < playerOrder.Length; i++)
@@ -48,7 +57,7 @@ namespace Sokoban
             playerOrder[playerOrder.Length - 1] = first;
         }
 
-        public bool Move(int x, int y, int dx, int dy)
+        private bool Move(int x, int y, int dx, int dy)
         {
             if (dx == 0 && dy == 0) return false;
             int nx = x + dx, ny = y + dy;
@@ -85,6 +94,8 @@ namespace Sokoban
                     copy = Clone();
                 }
             }
+            if (copy.Pass()) yield return copy;
+            // Copy if continuing
         }
 
         public int HeuristicCost()

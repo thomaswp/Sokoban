@@ -86,7 +86,7 @@ namespace Sokoban
 
             // if all good, return path
             Node temp = OpenList[0];
-            while (temp.Parent.State != start && temp != null)
+            while (temp != null)
             {
                 Path.Push(temp.State);
                 temp = temp.Parent;
