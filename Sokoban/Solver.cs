@@ -12,14 +12,14 @@ namespace Sokoban
         {
             public readonly Node Parent;
             public readonly LevelState State;
-            public readonly int DistanceToTarget;
+            public readonly int EstimatedDistance;
             public readonly int Cost;
             public int F
             {
                 get
                 {
-                    if (DistanceToTarget != -1 && Cost != -1)
-                        return DistanceToTarget + Cost;
+                    if (EstimatedDistance != -1 && Cost != -1)
+                        return EstimatedDistance + Cost;
                     else
                         return -1;
                 }
@@ -29,7 +29,7 @@ namespace Sokoban
             {
                 Parent = parent;
                 State = state;
-                DistanceToTarget = state.HeuristicCost();
+                EstimatedDistance = state.HeuristicCost();
                 Cost = parent == null ? 0 : 1 + parent.Cost;
             }
 
@@ -39,9 +39,31 @@ namespace Sokoban
             }
         }
 
-        public static Stack<LevelState> FindPath(LevelState start)
+        public struct Solution
         {
-            Stack<LevelState> Path = new Stack<LevelState>();
+            public int Explored;
+            public int Seen;
+            public int MaxUnderestimation;
+            public List<LevelState> Path;
+            
+            public bool Solved { get { return Path != null; } }
+
+            public override string ToString()
+            {
+                string s = String.Format("Explored {0} nodes ({1} unique)\nMax Underestimation: {2}\n", Explored, Seen, MaxUnderestimation);
+                if (Path == null) return s + "Unsolved";
+                int i = 0;
+                foreach (LevelState state in Path)
+                {
+                    s += (i++) + "\n" + state + "\n";
+                }
+                return s;
+            }
+        }
+
+        public static Solution FindPath(LevelState start, int maxExplored = 4000)
+        {
+            Solution solution = new Solution();
             List<Node> OpenList = new List<Node>();
             HashSet<LevelState> Seen = new HashSet<LevelState>();
             Node current = new Node(null, start);
@@ -51,7 +73,6 @@ namespace Sokoban
             Seen.Add(current.State);
 
             bool done = false;
-            int explored = 1;
 
             while (OpenList.Count != 0)
             {
@@ -66,36 +87,42 @@ namespace Sokoban
 
                 foreach (LevelState state in adjacencies)
                 {
-                    explored++;
+                    solution.Explored++;
                     if (!Seen.Contains(state))
                     {
                         Node n = new Node(current, state);
                         Seen.Add(state);
                         OpenList.Insert(0, n);
-                        if (n.DistanceToTarget == 0)
+                        if (n.EstimatedDistance == 0)
                         {
                             done = true;
                             break;
                         }
                     }
                 }
-                if (done) break;
+                if (done || solution.Explored >= maxExplored) break;
                 OpenList.Sort();
             }
 
-            Console.WriteLine("Explored {0} nodes ({1} unique)", explored, Seen.Count);
+            solution.Seen = Seen.Count;
 
             // construct path, if end was not closed return null
-            if (!done) return null;
+            if (!done) return solution;
+            
+            solution.Path = new List<LevelState>();
 
             // if all good, return path
             Node temp = OpenList[0];
             while (temp != null)
             {
-                Path.Push(temp.State);
+                solution.MaxUnderestimation = Math.Max(solution.MaxUnderestimation, 
+                    temp.EstimatedDistance - solution.Path.Count);
+                solution.Path.Insert(0, temp.State);
                 temp = temp.Parent;
             }
-            return Path;
+
+
+            return solution;
         }
     }
 }

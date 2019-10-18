@@ -21,7 +21,9 @@ namespace Sokoban
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            level = new Level(Level.Level3);
+            var gen = new RandomGenerator(6, 6, 1, 3);
+            //level = new Level(gen.Generate());
+            level = new Level(gen.GenerateBest(1000));
             label1.Text = level.ToString();
             label2.Text = "0";
 
@@ -38,15 +40,14 @@ namespace Sokoban
             {
                 level.Pass();
             }
-            else
             {
                 int dx = 0, dy = 0;
                 switch (e.KeyChar)
                 {
-                    case 'w': dy--; break;
-                    case 'a': dx--; break;
-                    case 's': dy++; break;
-                    case 'd': dx++; break;
+                    case 'w': case (char)Keys.Up: dy--; break;
+                    case 'a': case (char)Keys.Left: dx--; break;
+                    case 's': case (char)Keys.Down: dy++; break;
+                    case 'd': case (char)Keys.Right: dx++; break;
                 }
                 level.Move(dx, dy);
             }

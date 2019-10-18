@@ -177,12 +177,7 @@ namespace Sokoban
                         state[j, i] = Actor.Player.id;
                         continue;
                     }
-                    if (icon == '@')
-                    {
-                        state[j, i] = Actor.Box.id | Actor.Switch.id;
-                        continue;
-                    }
-                    state[j, i] = Actor.ActorForIcon(icon).id;
+                    state[j, i] = Actor.ActorIDsForIcon(icon);
                 }
             }
             return new LevelState(state, playerOrder.ToArray());
@@ -202,7 +197,7 @@ namespace Sokoban
                         continue;
                     }
                     int id = state[j, i];
-                    char icon = Actor.ActorForId(id).icon;
+                    char icon = Actor.ActorIconForIDs(id);
                     s += icon;
                 }
                 s += "\n";

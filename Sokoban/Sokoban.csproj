@@ -52,6 +52,7 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Generator.cs" />
     <Compile Include="Level.cs" />
     <Compile Include="LevelState.cs" />
     <Compile Include="Program.cs" />

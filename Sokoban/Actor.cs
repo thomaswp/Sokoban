@@ -45,9 +45,24 @@ namespace Sokoban
             return actors[index];
         }
 
+        public static char ActorIconForIDs(int id)
+        {
+            if (id == (Box.id | Switch.id)) return '@';
+            return ActorForId(id).icon;
+        }
+
+        public static int ActorIDsForIcon(char icon)
+        {
+            if (icon == '@')
+            {
+                return Box.id | Switch.id;
+            }
+            return ActorForIcon(icon).id;
+        }
+
         public static Actor ActorForIcon(char icon)
         {
-            return actors.Where(a => a.icon == icon).First();
+            return actors.Where(a => a.icon == icon).DefaultIfEmpty(null).First();
         }
 
         public virtual bool CanMove(int x, int y, int dx, int dy, LevelState state)
